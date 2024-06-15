@@ -1,0 +1,35 @@
+---
+- name: Deploy Docker container with variables
+  hosts: localhost
+  become: true
+  vars:
+    domain_name: "gitlabsopheng.sen-pai.live"
+    app_port: "9090" # Corrected missing quote
+  tasks:
+    - name: Setup Nginx Server Block
+      template:
+        src: ~/resources/ansible/template/nginx_domain.conf.j2
+        dest: "/etc/nginx/sites-available/{{ domain_name }}"
+
+    - name: Enable Nginx configuration
+      file:
+        src: "/etc/nginx/sites-available/{{ domain_name }}"
+        dest: "/etc/nginx/sites-enabled/{{ domain_name }}"
+        state: link
+
+  #   - name: Reload Nginx to apply changes
+  #     service:
+  #       name: nginx
+  #       state: reloaded
+  #   - name: Obtain and Install SSL Certificate with Certbot
+  #     command: certbot --nginx -d {{ domain_name }} --non-interactive --agree-tos -m your@email.com --redirect
+  #     args:
+  #       creates: /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem
+  #     notify:
+  #       - Reload Nginx
+
+  # handlers:
+  #   - name: Reload Nginx
+  #     service:
+  #       name: nginx
+  #       state: reloaded

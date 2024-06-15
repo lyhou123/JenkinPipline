@@ -1,0 +1,28 @@
+@Library(['jenkinslib']) _
+pipeline {
+    agent any
+    environment {
+        DOCKER_TAG = "${BUILD_NUMBER}"
+        ImageName = "nextjsdocker"
+    }
+    stages {
+        stage('Git Clone') {
+            steps {
+                git 'https://github.com/MuyleangIng/angular-jenkins.git'
+            }
+        }
+        stage('Write Docker file to git Repo') {
+            steps {
+                script {
+                    echo "Build number is ${BUILD_NUMBER}"
+                    nextWithDocker(DOCKER_TAG,ImageName)
+                }
+            }
+        }
+        stage('List Directory') {
+            steps {
+                sh "ls -lrt"
+            }
+        }
+    }
+}

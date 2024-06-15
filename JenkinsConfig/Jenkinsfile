@@ -1,0 +1,72 @@
+@Library(['jenkinslib']) _
+
+pipeline {
+    agent any
+
+    environment {
+        REGISTRY = 'shinchanz'
+        IMAGE = 'angular-docker'
+        TAG = "${BUILD_NUMBER}"
+        CREDENTIALS_ID = 'dockerhub'
+        CONTAINER_PORT = '4000'
+        HOST_PORT = '8082'
+        CONTAINER_NAME = "${IMAGE}-${TAG}"
+    }
+
+    stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('Git Clone') {
+            steps {
+                git branch: 'main', url: 'https://github.com/roldophe/my-angular-project.git'
+            }
+        }    
+        stage('Build and Push Docker Image') {
+            steps {
+                script {
+                    buildAndPushDocker(
+                        image: env.IMAGE,
+                        registry: env.REGISTRY,
+                        tag: env.TAG,
+                        credentialsId: env.CREDENTIALS_ID
+                    )
+                }
+            }
+        }
+        
+        stage('Deploy Docker Container') {
+            steps {
+                script {
+                    deployDocker(
+                        image: env.IMAGE,
+                        registry: env.REGISTRY,
+                        tag: env.TAG,
+                        containerPort: env.CONTAINER_PORT,
+                        hostPort: env.HOST_PORT,
+                        containerName: env.CONTAINER_NAME
+                    )
+                }
+            }
+        }
+    }
+
+    // post {
+    //     success {
+    //         script {
+    //             def successMessage = """
+    //                     *Deployment Successful:*
+    //                     - *Container:* env.CONTAINER_NAME
+    //                 """
+    //             sendNotification("Deployment successful for ${env.IMAGE}:${env.TAG}")
+    //         }
+    //     }
+    //     failure {
+    //         script {
+    //             sendNotification("Deployment failed for ${env.IMAGE}:${env.TAG}")
+    //         }
+    //     }
+    // }
+}
