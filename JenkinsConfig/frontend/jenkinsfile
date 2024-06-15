@@ -13,7 +13,7 @@ pipeline {
                         git branch: 'main', url: 'https://github.com/lyhou123/JenkinPipline.git'
                     } else if (params.branch == 'staging') {
                         echo 'Hello Staging'
-                        git branch: 'lyhou', url: 'https://github.com/lyhou123/JenkinPipline.git'
+                        git branch: 'main', url: 'https://github.com/lyhou123/JenkinPipline.git'
                     } else {
                         echo 'Hello Development'
                         git branch: 'development', url: 'https://github.com/lyhou123/JenkinPipline.git'
