@@ -1,13 +1,20 @@
 pipeline {
     agent any
      parameters{
-        choice(name: "TEST_CHOICE", choices: ["production", "staging", "development"], description: "Sample multi-choice parameter")
+        choice(name: "branch", choices: ["production", "staging", "development"], description: "Sample multi-choice parameter")
     }
     stages {
         stage('Hello') {
             steps {
-                echo 'Hello World'
+                script{
+                    if(parameter.branch == 'production'){
+                        echo 'Hello Production'
+                        git:branch:'main', url: 'https://github.com/lyhou123/JenkinPipline.git'
+                }else if(parameter.branch == 'staging'){
+                        git:branch:'lyhou', url: 'https://github.com/lyhou123/JenkinPipline.git'
+                        }
             }
         }
     }
+}
 }
